@@ -3,24 +3,25 @@ import itertools
 import sys
 
 
-def lap_cen(G):
+def calculate_centrality(G):
     # network energy calculations
-    lap_cen = {}
+    laplacian_centrality = {}
 
-    acum_weight_sum = 0
+    cumulative_weight_sum = 0
     for node in G.nodes():
         node_weight_sum = 0
         for i in list(G.edges(data="weight", nbunch=node)):
             node_weight_sum += i[2]
-        acum_weight_sum += node_weight_sum ** 2
+        cumulative_weight_sum += node_weight_sum ** 2
 
-    acum_edge_weight = 0
+    cumulative_edge_weight = 0
     for edge in G.edges(data="weight"):
-        acum_edge_weight += 2 * (edge[2] ** 2)
+        cumulative_edge_weight += 2 * (edge[2] ** 2)
 
-    # network's laplacian energy (sum of nodes' weight sum to the power of two + 2 * (sum of every edge's weight to the power of two )  )
-    net_lap_energy = acum_weight_sum + acum_edge_weight
+    # network's laplacian energy (sum of nodes' weight sum to the power of two + 2 * (sum of every edge's weight to the power of two ) )
+    net_lap_energy = cumulative_weight_sum + cumulative_edge_weight
 
+    
     # calculating walks and centrality for each node
     for n in G.nodes():
 
@@ -40,12 +41,12 @@ def lap_cen(G):
                 if j[1] != i[0]:
                     opn_wlk_end += i[2] * j[2]
 
-        #       making up a dict of (node: node laplacian energy) pairs
-        lap_cen.update(
+        # making up a dict of (node: node laplacian energy) pairs
+        laplacian_centrality.update(
             {n: (4 * clsd_wlk + 2 * opn_wlk_end + 2 * opn_wlk_mid) / net_lap_energy}
         )
 
-    return lap_cen
+    return laplacian_centrality
 
 
 with open(sys.argv[-1]) as f:
@@ -56,5 +57,5 @@ for edge in G.edges(data=True):
         edge[2].update({"weight": 1})
 
 # set laplacian centrality as node attribute
-nx.set_node_attributes(G, lap_cen(G), "lap_cen")
+nx.set_node_attributes(G, calculate_centrality(G), "lap_cen")
 print(nx.classes.function.get_node_attributes(G, "lap_cen"))
