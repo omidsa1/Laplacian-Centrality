@@ -49,13 +49,15 @@ def calculate_centrality(G):
     return laplacian_centrality
 
 
-with open(sys.argv[-1]) as f:
-    G = nx.parse_edgelist(f, nodetype=int, data=(("weight", int),))
+if __name__ == "__main__":
 
-for edge in G.edges(data=True):
-    if edge[2] == {}:
-        edge[2].update({"weight": 1})
+    with open(sys.argv[-1]) as f:
+        G = nx.parse_edgelist(f, nodetype=int, data=(("weight", int),))
 
-# set laplacian centrality as node attribute
-nx.set_node_attributes(G, calculate_centrality(G), "lap_cen")
-print(nx.classes.function.get_node_attributes(G, "lap_cen"))
+    for edge in G.edges(data=True):
+        if edge[2] == {}:
+            edge[2].update({"weight": 1})
+
+    # set laplacian centrality as node attribute
+    nx.set_node_attributes(G, calculate_centrality(G), "lap_cen")
+    print(nx.classes.function.get_node_attributes(G, "lap_cen"))
